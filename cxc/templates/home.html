@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="mb-3 mt-5">
+    <label for="textInput" class="form-label">Welcome to CXC - CaseXConvert </label>
+    <p>Enjoy seamless text transformation at your fingertips.</p>
+    <textarea class="form-control" id="textInput" rows="10">This is the example.</textarea>
+</div>
+<button type="button" class="btn btn-dark" onclick="convertCase('lower')">lower case</button>
+<button type="button" class="btn btn-dark" onclick="convertCase('upper')">UPPER CASE</button>
+<button type="button" class="btn btn-dark" onclick="convertCase('capitalized')">Capitalized Case</button>
+<button type="button" class="btn btn-dark" onclick="convertCase('alternating')">aLtErNaTiNg cAsE</button>
+<button type="button" class="btn btn-dark" onclick="convertCase('title')">Title Case</button>
+<button type="button" class="btn btn-dark" onclick="convertCase('inverse')">InVeRsE CaSe</button>
+<button type="button" class="btn btn-dark" onclick="downloadText()">Download Text</button>
+<button type="button" class="btn btn-dark" onclick="copyToClipboard()">Copy to Clipboard</button>
+<button type="button" class="btn btn-dark" onclick="convertCase('clear')">Clear</button>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    function convertCase(caseType) {
+        var textInput = document.getElementById('textInput');
+        var text = textInput.value;
+        
+        switch (caseType) {
+            case 'lower':
+                textInput.value = text.toLowerCase();
+                break;
+            case 'upper':
+                textInput.value = text.toUpperCase();
+                break;
+            case 'capitalized':{
+                textInput.value = text.toLowerCase();
+                textInput.value = text.replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+                break;
+            }
+            case 'alternating':
+                textInput.value = text.split('').map((c, i) => i % 2 === 0 ? c.toLowerCase() : c.toUpperCase()).join('');
+                break;
+            case 'title':
+                textInput.value = text.replace(/\w\S*/g, function(txt) {
+                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                });
+                break;
+            case 'inverse':
+                textInput.value = text.split('').map(c => c === c.toLowerCase() ? c.toUpperCase() : c.toLowerCase()).join('');
+                break;
+            case 'clear':
+                textInput.value = '';
+                break;
+        }
+    }
+
+    function downloadText() {
+        var text = document.getElementById('textInput').value;
+        var element = document.createElement('a');
+        var file = new Blob([text], {type: 'text/plain'});
+        element.href = URL.createObjectURL(file);
+        element.download = 'text.txt';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+
+    function copyToClipboard() {
+        var textInput = document.getElementById('textInput');
+        textInput.select();
+        textInput.setSelectionRange(0, 99999); // For mobile devices
+        document.execCommand('copy');
+        alert('Text copied to clipboard');
+    }
+</script>
+{% endblock %}
